@@ -4,11 +4,15 @@ import './product_item.dart';
 import '../providers/products_provider.dart';
 
 class ProductGridView extends StatelessWidget {
+
+ final bool isfavScreen;
+
+  ProductGridView(this.isfavScreen);
   
   @override
   Widget build(BuildContext context) {
-    final productData = Provider.of< ProductsProvider >(context);
-    final loadedProducts = productData.items;
+    final productData =  Provider.of< ProductsProvider >(context);
+    final loadedProducts = isfavScreen ? productData.favItems :productData.items;
     return Container(
       child : GridView.builder(
         
