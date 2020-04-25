@@ -39,7 +39,7 @@ class Cart with ChangeNotifier {
   }
 
   void addToCart(String id, double price, String title) {
-    print(_items.length);
+ 
 
     if (_items.containsKey(id)) {
       _items.update(
@@ -61,4 +61,12 @@ class Cart with ChangeNotifier {
 
     notifyListeners();
   }
+
+   void clearCart(){
+     _items ={};
+
+     notifyListeners();
+
+   }
+
 }
