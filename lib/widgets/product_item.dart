@@ -14,14 +14,12 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product =  Provider.of<Product>(context);
-    Provider.of<Cart>(context ,listen: false);
+    final product = Provider.of<Product>(context);
+    Provider.of<Cart>(context, listen: false);
     return ClipRRect(
-      
       borderRadius: BorderRadius.circular(10),
       child: Container(
         child: GridTile(
-          
           child: GestureDetector(
             onTap: () {
               Navigator.of(context).pushNamed(
@@ -35,29 +33,44 @@ class ProductItem extends StatelessWidget {
             ),
           ),
           footer: GridTileBar(
-            backgroundColor: Colors.black87,
-            leading: IconButton(
-              
-              icon: Icon(product.isFavorite ?Icons.favorite : Icons.favorite_border),
-              color: Theme.of(context).accentColor,
-              onPressed: () { product.togglefavourite();},
-            ),
-            title: FittedBox(
-                        child: Text(
-                product.title,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15),
+              backgroundColor: Colors.black87,
+              leading: IconButton(
+                icon: Icon(product.isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border),
+                color: Theme.of(context).accentColor,
+                onPressed: () {
+                  product.togglefavourite();
+                },
               ),
-            ),
-            trailing: Consumer<Cart>(builder: (ctx , cart , child) => IconButton(
-              icon: Icon(
-                Icons.shopping_cart,
+              title: FittedBox(
+                child: Text(
+                  product.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15),
+                ),
               ),
-              onPressed: () { cart.addToCart(product.id, product.price,product.title);},
-              color: Theme.of(context).accentColor,
-            ),
-            )
-          ),
+              trailing: Consumer<Cart>(
+                builder: (ctx, cart, child) => IconButton(
+                  icon: Icon(
+                    Icons.shopping_cart,
+                  ),
+                  onPressed: () {
+                    cart.addToCart(product.id, product.price, product.title);
+                    Scaffold.of(context).removeCurrentSnackBar();
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Successfully Added to Cart"),
+                      duration: Duration(seconds: 2),
+                  
+                      action: SnackBarAction(
+                        label: "UNDO",
+                        onPressed: () {cart.removeSingleItem(product.id);},
+                      ),
+                    ));
+                  },
+                  color: Theme.of(context).accentColor,
+                ),
+              )),
         ),
       ),
     );
