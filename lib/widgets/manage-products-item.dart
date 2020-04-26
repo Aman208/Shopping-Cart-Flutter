@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/edit-product.dart';
 
 class ManageProductsItem extends StatelessWidget {
   final String url;
@@ -18,10 +19,10 @@ class ManageProductsItem extends StatelessWidget {
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () {Navigator.of(context).pushNamed(EditProduct.routeName);},
               color: Theme.of(context).primaryColor,
             ),
-            Divider(color: Colors.amber,),
+           
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {},
