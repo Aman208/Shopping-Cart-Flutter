@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class EditProduct extends StatefulWidget {
@@ -8,17 +7,44 @@ class EditProduct extends StatefulWidget {
   _EditProductState createState() => _EditProductState();
 }
 
-final _priceFocusNode = FocusNode();
+
+
+class _EditProductState extends State<EditProduct> {
+
+ final _priceFocusNode = FocusNode();
 final _descriptionFocusNode = FocusNode();
+final _imageFocusNode = FocusNode();
+final _imageTextController = TextEditingController();
+
+
+ void initState(){
+  
+  _imageFocusNode.addListener(updateImage);
+
+   super.initState();
+ }
 
 @override
 void dispose() {
+  _imageFocusNode.removeListener(updateImage);
   _priceFocusNode.dispose();
   _descriptionFocusNode.dispose();
-  //  super.dispose();
+  _imageFocusNode.dispose();
+  _imageTextController.dispose();
+   super.dispose();
 }
 
-class _EditProductState extends State<EditProduct> {
+void updateImage(){
+ 
+ if(!_imageFocusNode.hasFocus)
+   {
+     setState((){});
+   }
+
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,13 +71,41 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 TextFormField(
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   focusNode: _descriptionFocusNode,
-                ) ,
-
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      width: 100,
+                      height: 100,
+                      margin: EdgeInsets.only(
+                      top: 8,
+                      right: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey,
+                      ),
+                    ),
+                      child: _imageTextController.text.isEmpty
+                        ? Text('Enter a URL')
+                        : Image.network(_imageTextController.text),
+                    ),
+                    Expanded(
+                        child: TextFormField(
+                      keyboardType: TextInputType.url,
+                      decoration: InputDecoration(labelText: 'Image Url'),
+                      textInputAction: TextInputAction.done,
+                      focusNode: _imageFocusNode,
+                      controller: _imageTextController,
+                    ))
+                  ],
+                )
               ]),
             )));
   }
