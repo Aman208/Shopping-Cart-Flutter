@@ -32,8 +32,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Shopping Cart',
           theme:
-              ThemeData(primarySwatch: Colors.blue, accentColor: Colors.yellow),
+              ThemeData(primarySwatch: Colors.blue, accentColor: Colors.yellow ,fontFamily: 'Lato',),
+
           home: ProductsOverviewScreen(),
+          
           
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shopping_cart/widgets/app_drawer.dart';
 import 'package:shopping_cart/widgets/manage-products-item.dart';
 import '../providers/products_provider.dart';
+import '../screens/edit-product.dart';
 
 class ManageProductsScreen extends StatelessWidget {
   static String routeName = '/mangage-products';
@@ -13,7 +14,9 @@ class ManageProductsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Manage Products"),
-        actions: <Widget>[IconButton(icon: Icon(Icons.add), onPressed: (){})],
+        actions: <Widget>[IconButton(icon: Icon(Icons.add), onPressed: (){
+          Navigator.of(context).pushNamed(EditProduct.routeName );
+        })],
       ),
       drawer: AppDrawer(),
       body: Container(
@@ -21,7 +24,9 @@ class ManageProductsScreen extends StatelessWidget {
         child: ListView.builder(
             itemBuilder: (ctx, index) => Column(
                   children: <Widget>[
-                    ManageProductsItem(productData.items[index].imageUrl,
+                    ManageProductsItem(
+                      productData.items[index].id ,
+                      productData.items[index].imageUrl,
                         productData.items[index].title),
                      Divider(),
                   ],
