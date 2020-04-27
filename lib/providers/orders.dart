@@ -19,6 +19,37 @@ class Orders with ChangeNotifier {
     return [..._items];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    const url = 'https://shopping-cart-f6e08.firebaseio.com/orders.json';
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(
+        OrderItem(
+          id: orderId,
+          totalAmount: orderData['totalAmount'],
+          dateTime: DateTime.parse(orderData['dateTime']),
+          orderedProducts: (orderData['orderedProducts'] as List<dynamic>)
+              .map(
+                (item) => CartItem(
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+    _items = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
   Future<void> addOrders(double amount, List<CartItem> orderedProducts) async {
     const url = 'https://shopping-cart-f6e08.firebaseio.com/orders.json';
 
@@ -28,12 +59,14 @@ class Orders with ChangeNotifier {
           body: json.encode({
             'totalAmount': amount,
             'dateTime': timestamp.toIso8601String(),
-            'orderedProducts': orderedProducts.map((prod) => {
-                  'id': prod.id,
-                  'title': prod.title,
-                  'price': prod.price,
-                  'quantity': prod.quantity
-                })
+            'orderedProducts': orderedProducts
+                .map((prod) => {
+                      'id': prod.id,
+                      'title': prod.title,
+                      'price': prod.price,
+                      'quantity': prod.quantity,
+                    })
+                .toList(),
           }));
 
       _items.insert(
