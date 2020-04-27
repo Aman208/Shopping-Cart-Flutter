@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../models/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
@@ -67,10 +68,12 @@ class ProductsProvider with ChangeNotifier {
             description: product['description'],
             price: product['price'],
             imageUrl: product['imageUrl'],
+            isFavorite: product['isFavorite'],
             id: prodid));
       });
 
       _items = loadedProducts;
+      notifyListeners();
     } catch (error) {
       throw error;
     }
@@ -104,22 +107,49 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url = 'https://shopping-cart-f6e08.firebaseio.com/products/$id.json';
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+
+    _items.removeAt(existingProductIndex);
+
     notifyListeners();
+
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 
-  void updateProduct(String id, Product updatedProduct) {
-    if (id == null) {
-      return;
-    } else {
+
+  Future<void> updateProduct(String id, Product updatedProduct) async {
+    
+       var url = 'https://shopping-cart-f6e08.firebaseio.com/products/$id.json';
+       
+       try{
+       await http.patch(url, body :  json.encode({
+            'title': updatedProduct.title,
+            'description': updatedProduct.description,
+            'imageUrl':updatedProduct.imageUrl,
+            'price': updatedProduct.price,
+          }));
+        
       var temp = _items.indexWhere((prod) => prod.id == id);
+
       if (temp >= 0)
         _items[temp] = updatedProduct;
       else {
         return;
       }
-    }
+       }
+       catch(error){
+         throw error;
+       }
+    
 
     notifyListeners();
   }

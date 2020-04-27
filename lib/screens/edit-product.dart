@@ -46,8 +46,11 @@ class _EditProductState extends State<EditProduct> {
     if (_isInit) {
       final productId = ModalRoute.of(context).settings.arguments as String;
       if (productId != null) {
+         
         _editedProduct = Provider.of<ProductsProvider>(context, listen: false)
             .findItembyId(productId);
+
+         print(_editedProduct.isFavorite);   
         _initValues = {
           'title': _editedProduct.title,
           'description': _editedProduct.description,
@@ -89,15 +92,36 @@ class _EditProductState extends State<EditProduct> {
     setState(() {
       isLoading = true;
     });
+
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
     _form.currentState.save();
+
     if (_editedProduct.id != null) {
-      Provider.of<ProductsProvider>(context, listen: false)
+      try{
+      await Provider.of<ProductsProvider>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      Navigator.of(context).pop();
+      }
+      catch(error){
+         await showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  content: Text("Something Went Wrong!"),
+                  title: Text("Error in Editing Product "),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Okay"),
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                    )
+                  ],
+                ));
+
+      }
+
     } else {
       try {
         await Provider.of<ProductsProvider>(context, listen: false)
@@ -117,13 +141,15 @@ class _EditProductState extends State<EditProduct> {
                     )
                   ],
                 ));
-      } finally {
-        setState(() {
+      }  
+    }
+
+    setState(() {
           isLoading = false;
         });
-        Navigator.of(context).pop();
-      }
-    }
+    Navigator.of(context).pop();
+
+
   }
 
   @override

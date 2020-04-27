@@ -19,9 +19,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool isLoading = false;
   @override
   void initState() {
-      
+   super.initState();
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
